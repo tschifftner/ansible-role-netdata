@@ -28,11 +28,10 @@ script:
   - ${PWD}/tests/test.sh
 
   # Ensure PHP is installed.
-  - ${DOCKER} which netdata
-  - ${DOCKER} netdata -v
   - ${DOCKER} test -x /opt/netdata/netdata/usr/sbin/netdata
-  - ${DOCKER} test -x /etc/logrotate.d/netdata
+  - ${DOCKER} test -e /etc/logrotate.d/netdata
   - ${DOCKER} curl http://127.0.0.1:19999/ | grep "Your netdata version:"
+  - ${DOCKER} netdata -v
 
   # Ensure nginx is started
   - ${DOCKER} systemctl --no-pager status netdata | grep 'netdata.service; enabled'
@@ -41,9 +40,9 @@ script:
 
 after_failure:
   - ${DOCKER} curl http://127.0.0.1:19999/
-  - ${DOCKER} curl http://127.0.0.1:19999/netdata.conf
   - ${DOCKER} systemctl --no-pager status netdata
   - ${DOCKER} ansible --version
+  - ${DOCKER} netdata -v
 
 notifications:
   slack: ambimax:2MlPTX9bY9aPxCPhJGxHKIT6

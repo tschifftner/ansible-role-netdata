@@ -5,6 +5,7 @@ netdata_version: v1.10.0
 
 netdata_repo_url: https://github.com/firehol/netdata.git
 netdata_binary: /opt/netdata/netdata/usr/sbin/netdata
+netdata_symlink: /usr/local/bin/netdata
 netdata_deps:
   - zlib1g-dev
   - uuid-dev

@@ -38,6 +38,12 @@
   when: not netdata_present.stat.exists or _netdata_updated.changed
   notify: restart netdata
 
+- name: Set symlink
+  file:
+    src: '{{ netdata_binary }}'
+    dest: '{{ netdata_symlink }}'
+    state: link
+
 - name: 'Set permissions on systemd unit file'
   copy:
     src: '{{ netdata_install_dir }}/system/netdata.service'
