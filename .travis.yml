@@ -30,6 +30,7 @@ script:
   # Ensure PHP is installed.
   - ${DOCKER} test -x /opt/netdata/netdata/usr/sbin/netdata
   - ${DOCKER} test -e /etc/logrotate.d/netdata
+  - ${DOCKER} test -e /etc/netdata/netdata.conf
   - ${DOCKER} curl http://127.0.0.1:19999/ | grep "Your netdata version:"
   - ${DOCKER} netdata -v
 

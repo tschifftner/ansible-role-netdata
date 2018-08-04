@@ -18,3 +18,14 @@ netdata_deps:
   - autogen
   - automake
   - pkg-config
+
+netdata_config_file: /etc/netdata/netdata.conf
+netdata_config_url: http://netdata.firehol.org/netdata.conf
+
+netdata_configuration:
+  - section: registry
+    option: enabled
+    value: yes
+  - section: registry
+    option: registry to announce
+    value: http://127.0.0.1:19999
