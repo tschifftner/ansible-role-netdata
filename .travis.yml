@@ -40,7 +40,6 @@ script:
 
 
 after_failure:
-  - ${DOCKER} netdata -v
   - ${DOCKER} curl http://127.0.0.1:19999/
   - ${DOCKER} curl http://127.0.0.1:19999/netdata.conf
   - ${DOCKER} systemctl --no-pager status netdata
