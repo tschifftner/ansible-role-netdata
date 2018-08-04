@@ -1,0 +1,19 @@
+---
+
+netdata_install_dir: /opt/netdata
+netdata_version: v1.10.0
+
+netdata_repo_url: https://github.com/firehol/netdata.git
+netdata_binary: /opt/netdata/netdata/usr/sbin/netdata
+netdata_deps:
+  - zlib1g-dev
+  - uuid-dev
+  - libmnl-dev
+  - gcc
+  - make
+  - git
+  - autoconf
+  - autoconf-archive
+  - autogen
+  - automake
+  - pkg-config

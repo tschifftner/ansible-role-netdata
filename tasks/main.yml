@@ -1,0 +1,56 @@
+---
+
+- name: Check if netdata is installed
+  stat:
+    path: '{{ netdata_binary }}'
+  register: netdata_present
+
+- debug:
+    msg: 'netdata not installed'
+  when: not netdata_present.stat.exists
+
+- debug:
+    msg: 'netdata installed'
+  when: netdata_present.stat.exists
+
+- name: Install package dependencies
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items: '{{ netdata_deps }}'
+  when: not netdata_present.stat.exists
+
+- name: Get current netdata repo
+  git:
+    repo: '{{ netdata_repo_url }}'
+    dest: '{{ netdata_install_dir }}'
+    version: '{{ netdata_version }}'
+    force: yes
+  register: _netdata_updated
+
+- debug:
+    var: '{{ _netdata_updated }}'
+
+- name: Build and install / update
+  shell: './netdata-installer.sh --install {{ netdata_install_dir }} --dont-wait --dont-start-it'
+  args:
+    chdir: '{{ netdata_install_dir }}'
+  when: not netdata_present.stat.exists or _netdata_updated.changed
+  notify: restart netdata
+
+- name: 'Set permissions on systemd unit file'
+  copy:
+    src: '{{ netdata_install_dir }}/system/netdata.service'
+    dest: /etc/systemd/system/netdata.service
+    owner: root
+    group: root
+    mode: '0750'
+  remote_src: yes
+  notify: reload systemd
+
+- name: Start netdata
+  service:
+    name: 'netdata'
+    state: started
+    enabled: yes
+  changed_when: false # fix idempotence
