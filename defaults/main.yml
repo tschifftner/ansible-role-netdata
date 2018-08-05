@@ -25,7 +25,7 @@ netdata_config_url: http://netdata.firehol.org/netdata.conf
 netdata_configuration:
   - section: registry
     option: enabled
-    value: yes
+    value: 'yes'
   - section: registry
     option: registry to announce
     value: http://127.0.0.1:19999

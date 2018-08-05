@@ -33,6 +33,8 @@ script:
   - ${DOCKER} test -e /etc/netdata/netdata.conf
   - ${DOCKER} curl http://127.0.0.1:19999/ | grep "Your netdata version:"
   - ${DOCKER} netdata -v
+  - ${DOCKER} cat /etc/netdata/netdata.conf | grep -e '^enabled = yes'
+  - ${DOCKER} cat /etc/netdata/netdata.conf | grep 'registry to announce = http://127.0.0.1:19999'
 
   # Ensure nginx is started
   - ${DOCKER} systemctl --no-pager status netdata | grep 'netdata.service; enabled'
