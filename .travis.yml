@@ -1,0 +1,52 @@
+---
+services: docker
+
+env:
+#  - distro: centos7
+#  - distro: centos6
+#  - distro: fedora27
+#  - distro: ubuntu1604
+#  - distro: ubuntu1404
+#  - distro: ubuntu1204
+
+  - distro: debian9
+  - distro: debian8
+  - distro: ubuntu1804
+  - distro: ubuntu1604
+
+script:
+  # Configure test script so we can run extra tests after playbook is run.
+  - export container_id=$(date +%s)
+  - export cleanup=false
+  - export DOCKER="docker exec --tty ${container_id} env TERM=xterm"
+
+  # Download test shim.
+  - wget -O ${PWD}/tests/test.sh https://gist.githubusercontent.com/tschifftner/4078cf2a8429d967d5e100649ff2caa9/raw/
+  - chmod +x ${PWD}/tests/test.sh
+
+  # Run tests.
+  - ${PWD}/tests/test.sh
+
+  # Ensure PHP is installed.
+  - ${DOCKER} test -x /opt/netdata/netdata/usr/sbin/netdata
+  - ${DOCKER} test -e /etc/logrotate.d/netdata
+  - ${DOCKER} test -e /etc/netdata/netdata.conf
+  - ${DOCKER} curl http://127.0.0.1:19999/ | grep "Your netdata version:"
+  - ${DOCKER} netdata -v
+  - ${DOCKER} cat /etc/netdata/netdata.conf | grep -e '^enabled = yes'
+  - ${DOCKER} cat /etc/netdata/netdata.conf | grep 'registry to announce = http://127.0.0.1:19999'
+
+  # Ensure nginx is started
+  - ${DOCKER} systemctl --no-pager status netdata | grep 'netdata.service; enabled'
+  - ${DOCKER} systemctl --no-pager status netdata | grep 'running'
+
+
+after_failure:
+  - ${DOCKER} curl http://127.0.0.1:19999/
+  - ${DOCKER} systemctl --no-pager status netdata
+  - ${DOCKER} ansible --version
+  - ${DOCKER} netdata -v
+
+notifications:
+  slack: ambimax:2MlPTX9bY9aPxCPhJGxHKIT6
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/

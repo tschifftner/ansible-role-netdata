@@ -1,0 +1,7 @@
+---
+
+- name: Install netdata
+  include_tasks: install.yml
+
+- name: Configure netdata
+  include_tasks: configure.yml

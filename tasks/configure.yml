@@ -1,0 +1,26 @@
+---
+
+- name: Check if configuration file exists
+  stat:
+    path: '{{ netdata_config_file }}'
+  register: _netdata_config_file
+
+- name: Ensure config path exist
+  file:
+    path: '{{ netdata_config_file | dirname }}'
+    state: directory
+
+- name: Download configuration file
+  get_url:
+    url: '{{ netdata_config_url }}'
+    dest: '{{ netdata_config_file }}'
+  when: not _netdata_config_file.stat.exists
+
+- name: Configure netdata
+  ini_file:
+    path: '{{ netdata_config_file }}'
+    section: '{{ item.section }}'
+    option: '{{ item.option }}'
+    value: '{{ item.value }}'
+  with_items: '{{ netdata_configuration }}'
+  when: netdata_configuration|length
